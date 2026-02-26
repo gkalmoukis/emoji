@@ -1,19 +1,31 @@
 import { useState, useMemo } from 'react'
-import { MagnifyingGlass, X, Copy } from '@phosphor-icons/react'
+import { MagnifyingGlass, X, Copy, Heart } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { EMOJIS, CATEGORIES, type Emoji } from '@/lib/emoji-data'
 
 interface IndexPageProps {
   onSelectEmoji: (emoji: Emoji) => void
+  favorites: string[]
+  recents: string[]
+  onToggleFavorite: (codepoint: string) => void
 }
 
-export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
+export default function IndexPage({ onSelectEmoji, favorites, recents, onToggleFavorite }: IndexPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
+  const favoriteEmojis = useMemo(() => {
+    return EMOJIS.filter(e => favorites.includes(e.codepoint))
+  }, [favorites])
+
+  const recentEmojis = useMemo(() => {
+    return recents.map(codepoint => EMOJIS.find(e => e.codepoint === codepoint)).filter(Boolean) as Emoji[]
+  }, [recents])
 
   const filteredEmojis = useMemo(() => {
     let filtered = EMOJIS
@@ -51,6 +63,50 @@ export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
       toast.error('Failed to copy emoji')
     }
   }
+
+  const handleFavoriteClick = (codepoint: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    onToggleFavorite(codepoint)
+    const isFavorited = !favorites.includes(codepoint)
+    toast.success(isFavorited ? 'Added to favorites' : 'Removed from favorites')
+  }
+
+  const renderEmojiGrid = (emojis: Emoji[], showActions = true) => (
+    <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
+      {emojis.map((emoji) => (
+        <Card
+          key={emoji.codepoint}
+          className="aspect-square flex items-center justify-center cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg active:scale-95 relative group"
+          onClick={() => onSelectEmoji(emoji)}
+        >
+          <span className="text-4xl">{emoji.emoji}</span>
+          {showActions && (
+            <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                size="sm"
+                variant={favorites.includes(emoji.codepoint) ? 'default' : 'secondary'}
+                className="h-6 w-6 p-0"
+                onClick={(e) => handleFavoriteClick(emoji.codepoint, e)}
+              >
+                <Heart 
+                  size={14} 
+                  weight={favorites.includes(emoji.codepoint) ? 'fill' : 'regular'}
+                />
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="h-6 w-6 p-0"
+                onClick={(e) => copyEmoji(emoji.emoji, e)}
+              >
+                <Copy size={14} />
+              </Button>
+            </div>
+          )}
+        </Card>
+      ))}
+    </div>
+  )
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-7xl">
@@ -105,6 +161,35 @@ export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
         })}
       </div>
 
+      {favoriteEmojis.length > 0 && !searchQuery && selectedCategories.length === 0 && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Heart size={24} weight="fill" className="text-accent" />
+              Favorites
+            </h2>
+            {renderEmojiGrid(favoriteEmojis)}
+          </div>
+          <Separator className="my-8" />
+        </>
+      )}
+
+      {recentEmojis.length > 0 && !searchQuery && selectedCategories.length === 0 && (
+        <>
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-4">Recently Viewed</h2>
+            {renderEmojiGrid(recentEmojis.slice(0, 10))}
+          </div>
+          <Separator className="my-8" />
+        </>
+      )}
+
+      {(searchQuery || selectedCategories.length > 0) && (
+        <h2 className="text-2xl font-bold mb-4">
+          {searchQuery || selectedCategories.length > 0 ? 'Search Results' : 'All Emojis'}
+        </h2>
+      )}
+
       {filteredEmojis.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-5xl mb-4">🤔</p>
@@ -113,25 +198,7 @@ export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-          {filteredEmojis.map((emoji) => (
-            <Card
-              key={emoji.codepoint}
-              className="aspect-square flex items-center justify-center cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg active:scale-95 relative group"
-              onClick={() => onSelectEmoji(emoji)}
-            >
-              <span className="text-4xl">{emoji.emoji}</span>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
-                onClick={(e) => copyEmoji(emoji.emoji, e)}
-              >
-                <Copy size={14} />
-              </Button>
-            </Card>
-          ))}
-        </div>
+        renderEmojiGrid(filteredEmojis)
       )}
     </div>
   )

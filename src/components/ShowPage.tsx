@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Copy, Code, Share } from '@phosphor-icons/react'
+import { ArrowLeft, Copy, Code, Share, Heart } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -9,9 +9,11 @@ import { SKIN_TONES, type Emoji } from '@/lib/emoji-data'
 interface ShowPageProps {
   emoji: Emoji
   onBack: () => void
+  isFavorite: boolean
+  onToggleFavorite: () => void
 }
 
-export default function ShowPage({ emoji, onBack }: ShowPageProps) {
+export default function ShowPage({ emoji, onBack, isFavorite, onToggleFavorite }: ShowPageProps) {
   const [selectedTone, setSelectedTone] = useState(0)
 
   const displayEmoji = emoji.hasSkinTone
@@ -53,12 +55,29 @@ export default function ShowPage({ emoji, onBack }: ShowPageProps) {
     }
   }
 
+  const handleFavoriteClick = () => {
+    onToggleFavorite()
+    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites')
+  }
+
   return (
     <div className="container mx-auto px-6 py-8 max-w-5xl">
-      <Button variant="ghost" onClick={onBack} className="mb-6">
-        <ArrowLeft className="mr-2" />
-        Back
-      </Button>
+      <div className="flex items-center justify-between mb-6">
+        <Button variant="ghost" onClick={onBack}>
+          <ArrowLeft className="mr-2" />
+          Back
+        </Button>
+        <Button
+          variant={isFavorite ? 'default' : 'outline'}
+          onClick={handleFavoriteClick}
+        >
+          <Heart
+            className="mr-2"
+            weight={isFavorite ? 'fill' : 'regular'}
+          />
+          {isFavorite ? 'Favorited' : 'Add to Favorites'}
+        </Button>
+      </div>
 
       <div className="space-y-6">
         <Card className="p-8">

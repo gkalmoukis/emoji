@@ -47,6 +47,20 @@ This is a focused tool with two main views (browse and detail), search/filter fu
 - **Progression**: Click share → Check if native share available → Open share dialog OR copy link → Toast confirms action
 - **Success criteria**: Uses Web Share API on mobile, falls back gracefully on desktop, shared links work correctly
 
+### Emoji Favoriting
+- **Functionality**: Users can mark emojis as favorites with a heart icon, creating a personalized collection
+- **Purpose**: Quick access to frequently used or preferred emojis without searching
+- **Trigger**: User clicks heart icon on emoji grid or detail page
+- **Progression**: Click heart → Emoji added to favorites (persistent) → Heart fills with animation → Toast confirms → Favorites section updates
+- **Success criteria**: Favorites persist across sessions, heart icon shows correct state, users can unfavorite easily, favorites appear in dedicated section on index page
+
+### Recent History
+- **Functionality**: Automatically tracks the last 20 emojis viewed by the user
+- **Purpose**: Allows users to quickly return to previously viewed emojis
+- **Trigger**: User clicks any emoji to view detail page
+- **Progression**: View emoji detail → Emoji added to recent history → Recent section updates on index page → Older entries automatically removed when limit reached
+- **Success criteria**: History persists across sessions, displays in reverse chronological order (newest first), automatically manages 20-item limit
+
 ## Edge Case Handling
 - **Empty Search Results**: Show friendly message with emoji suggesting to try different keywords or clear filters
 - **No Category Match**: Display all emojis when no categories are selected (default state)
