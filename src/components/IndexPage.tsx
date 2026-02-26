@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react'
-import { MagnifyingGlass, X } from '@phosphor-icons/react'
+import { MagnifyingGlass, X, Copy } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import { EMOJIS, CATEGORIES, type Emoji } from '@/lib/emoji-data'
 
 interface IndexPageProps {
@@ -38,6 +40,16 @@ export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
         ? prev.filter((c) => c !== category)
         : [...prev, category]
     )
+  }
+
+  const copyEmoji = async (emoji: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      await navigator.clipboard.writeText(emoji)
+      toast.success('Emoji copied to clipboard!')
+    } catch {
+      toast.error('Failed to copy emoji')
+    }
   }
 
   return (
@@ -105,10 +117,18 @@ export default function IndexPage({ onSelectEmoji }: IndexPageProps) {
           {filteredEmojis.map((emoji) => (
             <Card
               key={emoji.codepoint}
-              className="aspect-square flex items-center justify-center cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg active:scale-95"
+              className="aspect-square flex items-center justify-center cursor-pointer transition-all hover:-translate-y-1 hover:shadow-lg active:scale-95 relative group"
               onClick={() => onSelectEmoji(emoji)}
             >
               <span className="text-4xl">{emoji.emoji}</span>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0"
+                onClick={(e) => copyEmoji(emoji.emoji, e)}
+              >
+                <Copy size={14} />
+              </Button>
             </Card>
           ))}
         </div>
