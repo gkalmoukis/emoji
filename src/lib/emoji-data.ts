@@ -5,6 +5,18 @@ export interface Emoji {
   keywords: string[]
   codepoint: string
   hasSkinTone?: boolean
+  meaning?: string
+  designs?: EmojiDesign[]
+  unicodeName?: string
+  appleName?: string
+  alsoKnownAs?: string
+  shortcodes?: string
+  proposals?: string
+}
+
+export interface EmojiDesign {
+  platform: string
+  image: string
 }
 
 export const CATEGORIES = [
@@ -19,7 +31,27 @@ export const CATEGORIES = [
 ]
 
 export const EMOJIS: Emoji[] = [
-  { emoji: '😀', name: 'Grinning Face', category: 'Smileys', keywords: ['smile', 'happy', 'joy'], codepoint: 'U+1F600' },
+  { 
+    emoji: '😀', 
+    name: 'Grinning Face', 
+    category: 'Smileys', 
+    keywords: ['smile', 'happy', 'joy'], 
+    codepoint: 'U+1F600',
+    unicodeName: 'GRINNING FACE',
+    appleName: 'Grinning Face',
+    alsoKnownAs: 'Happy Face, Smiley Face',
+    shortcodes: ':grinning:',
+    meaning: 'A classic happy face expressing joy, excitement, or general positivity. Often used to convey cheerfulness or friendliness in conversations.',
+    designs: [
+      { platform: 'Apple', image: '😀' },
+      { platform: 'Google', image: '😀' },
+      { platform: 'Samsung', image: '😀' },
+      { platform: 'Microsoft', image: '😀' },
+      { platform: 'Twitter', image: '😀' },
+      { platform: 'Facebook', image: '😀' }
+    ],
+    proposals: 'Unicode 6.1 (2012)'
+  },
   { emoji: '😃', name: 'Grinning Face with Big Eyes', category: 'Smileys', keywords: ['smile', 'happy'], codepoint: 'U+1F603' },
   { emoji: '😄', name: 'Grinning Face with Smiling Eyes', category: 'Smileys', keywords: ['smile', 'happy', 'joy'], codepoint: 'U+1F604' },
   { emoji: '😁', name: 'Beaming Face with Smiling Eyes', category: 'Smileys', keywords: ['smile', 'happy'], codepoint: 'U+1F601' },
