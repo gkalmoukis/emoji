@@ -47,12 +47,26 @@ This is a focused tool with multiple views (landing, browse, detail, collections
 - **Progression**: Click copy button → Emoji/code copied to clipboard → Toast notification confirms → Button shows temporary success state
 - **Success criteria**: Clipboard API works reliably, toast appears within 100ms, users understand what was copied
 
-### Share Functionality
-- **Functionality**: Share button that opens native share dialog or copies shareable link
-- **Purpose**: Allows users to send specific emoji pages to others
-- **Trigger**: User clicks share button on detail page
-- **Progression**: Click share → Check if native share available → Open share dialog OR copy link → Toast confirms action
-- **Success criteria**: Uses Web Share API on mobile, falls back gracefully on desktop, shared links work correctly
+### AI Emoji Suggestions
+- **Functionality**: AI-powered emoji recommendation based on text input
+- **Purpose**: Helps users discover relevant emojis for their message or mood through intelligent suggestions
+- **Trigger**: User enters text in AI tool page and clicks "Suggest Emojis"
+- **Progression**: Enter text → Click suggest → AI analyzes context → Returns 8 emojis with relevance scores and explanations → User can copy, favorite, or view details
+- **Success criteria**: Suggestions are contextually relevant, response time under 5 seconds, clear explanations for each suggestion
+
+### AI Sentiment Analysis
+- **Functionality**: Advanced emotion and sentiment analysis of text input with emoji suggestions
+- **Purpose**: Provides deeper understanding of text tone and emotion with appropriate emoji recommendations
+- **Trigger**: User switches to Sentiment tab and enters text to analyze
+- **Progression**: Enter text → Click analyze → AI detects overall sentiment, confidence level, specific emotions with intensities, and tone → Returns sentiment breakdown with emotion bars → Suggests 6 emojis matching the sentiment → User can copy, favorite, or view details
+- **Success criteria**: Accurate sentiment detection (>80% accuracy), clear emotion visualization with progress bars, relevant emoji suggestions, confidence score displayed
+
+### AI Emoji Combinations
+- **Functionality**: AI generates popular and meaningful emoji combinations (2-4 emojis together)
+- **Purpose**: Helps users discover expressive emoji combinations that tell stories or convey complex ideas
+- **Trigger**: User switches to Combinations tab and clicks "Generate Combinations"
+- **Progression**: Click generate → AI creates 8 emoji combinations → Each shows combined emojis, meaning, usage context, and popularity score → User can copy all at once, favorite individual emojis, or view details
+- **Success criteria**: Combinations feel natural and commonly used, variety in themes (celebrations, emotions, reactions, activities), meaningful explanations, ability to regenerate for fresh ideas
 
 ### Emoji Favoriting
 - **Functionality**: Users can mark emojis as favorites with a heart icon, creating a personalized collection
