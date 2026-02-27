@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Heart, MagnifyingGlass, FolderOpen, Clock, Sparkle, Copy, Check } from '@phosphor-icons/react'
+import { Heart, MagnifyingGlass, FolderOpen, Clock, Sparkle, Copy, Check, Translate } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import EmojiShowcaseCarousel from './EmojiShowcaseCarousel'
@@ -44,7 +44,7 @@ export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPag
           </h1>
           
           <p className="text-xl lg:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Search, organize, and copy emojis instantly. Your personal emoji library with collections, favorites, and smart search.
+            Search, organize, and translate text into emojis. Your AI-powered emoji library with smart features.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -133,11 +133,11 @@ export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPag
             >
               <Card className="p-6 h-full bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer" onClick={onNavigateToAI}>
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
-                  <Sparkle className="text-primary" weight="fill" size={24} />
+                  <Translate className="text-primary" weight="fill" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">AI Suggestions</h3>
+                <h3 className="text-xl font-bold mb-2">Emoji Translation</h3>
                 <p className="text-muted-foreground">
-                  Describe any mood or situation and get perfect emoji suggestions powered by AI
+                  Convert any sentence into emojis with AI-powered word-by-word translation
                 </p>
               </Card>
             </motion.div>
@@ -146,13 +146,13 @@ export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPag
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card className="p-6 h-full bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 hover:border-accent/40 transition-colors">
+              <Card className="p-6 h-full bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 hover:border-accent/40 transition-colors cursor-pointer" onClick={onNavigateToAI}>
                 <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-                  <MagnifyingGlass className="text-accent" weight="bold" size={24} />
+                  <Sparkle className="text-accent" weight="fill" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Smart Search</h3>
+                <h3 className="text-xl font-bold mb-2">AI Suggestions</h3>
                 <p className="text-muted-foreground">
-                  Find any emoji instantly with real-time search across names, keywords, and categories
+                  Describe any mood or situation and get perfect emoji recommendations
                 </p>
               </Card>
             </motion.div>
@@ -163,11 +163,11 @@ export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPag
             >
               <Card className="p-6 h-full bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20 hover:border-destructive/40 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center mb-4">
-                  <FolderOpen className="text-destructive" weight="bold" size={24} />
+                  <MagnifyingGlass className="text-destructive" weight="bold" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Collections</h3>
+                <h3 className="text-xl font-bold mb-2">Smart Search</h3>
                 <p className="text-muted-foreground">
-                  Organize emojis into custom collections with names, icons, and colors
+                  Find any emoji instantly with search across names, keywords, and categories
                 </p>
               </Card>
             </motion.div>
@@ -178,11 +178,11 @@ export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPag
             >
               <Card className="p-6 h-full bg-gradient-to-br from-muted to-muted/50 border-border hover:border-foreground/20 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-foreground/10 flex items-center justify-center mb-4">
-                  <Heart className="text-foreground" weight="fill" size={24} />
+                  <FolderOpen className="text-foreground" weight="bold" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Favorites & History</h3>
+                <h3 className="text-xl font-bold mb-2">Collections & Favorites</h3>
                 <p className="text-muted-foreground">
-                  Save your go-to emojis and track your last 20 viewed emojis automatically
+                  Organize emojis into collections and save favorites with automatic history tracking
                 </p>
               </Card>
             </motion.div>

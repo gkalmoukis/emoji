@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
-import { ArrowLeft, Sparkle, Copy, Check, Heart, Smiley, Palette, Brain } from '@phosphor-icons/react'
+import { ArrowLeft, Sparkle, Copy, Check, Heart, Smiley, Palette, Brain, Translate } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { EMOJIS, type Emoji } from '@/lib/emoji-data'
@@ -38,11 +38,23 @@ interface EmojiCombination {
   popularity: number
 }
 
+interface TranslationResult {
+  original: string
+  translated: string
+  breakdown: Array<{
+    word: string
+    emoji: string
+    codepoint: string
+    reason: string
+  }>
+}
+
 export default function AISuggestPage({ onBack, onSelectEmoji, favorites, onToggleFavorite }: AISuggestPageProps) {
   const [prompt, setPrompt] = useState('')
   const [suggestions, setSuggestions] = useState<SuggestedEmoji[]>([])
   const [sentiment, setSentiment] = useState<SentimentAnalysis | null>(null)
   const [combinations, setCombinations] = useState<EmojiCombination[]>([])
+  const [translation, setTranslation] = useState<TranslationResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [copiedEmoji, setCopiedEmoji] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('suggest')
@@ -281,6 +293,75 @@ Return ONLY valid JSON.`
     }
   }
 
+  const handleTranslate = async () => {
+    if (!prompt.trim()) {
+      toast.error('Please enter a sentence to translate')
+      return
+    }
+
+    setIsLoading(true)
+    setTranslation(null)
+
+    try {
+      const promptText = window.spark.llmPrompt`You are an expert at translating sentences into emoji sequences that preserve meaning.
+
+Translate this sentence into emojis:
+
+TEXT: "${prompt}"
+
+EMOJI DATABASE:
+${JSON.stringify(EMOJIS.map(e => ({
+  emoji: e.emoji,
+  name: e.name,
+  category: e.category,
+  keywords: e.keywords,
+  codepoint: e.codepoint
+})))}
+
+Rules:
+- Convert each significant word/concept into 1-2 emojis
+- Preserve the sentence structure and meaning
+- Use the most relevant emoji for each word
+- Skip articles (a, an, the) and most prepositions
+- For complex concepts, use emoji combinations
+- Be creative but accurate
+
+Return as JSON object with property "translation" containing:
+- original: the original text (string)
+- translated: the full emoji translation as a single string (all emojis joined together)
+- breakdown: array of objects for each word/concept translated:
+  - word: the original word or phrase (string)
+  - emoji: the emoji used (string, can be multiple emojis)
+  - codepoint: the codepoint(s) from database, comma-separated if multiple (string)
+  - reason: very brief explanation (max 6 words)
+
+Format:
+{
+  "translation": {
+    "original": "I love pizza",
+    "translated": "❤️🍕",
+    "breakdown": [
+      {"word": "I", "emoji": "👤", "codepoint": "U+1F464", "reason": "Represents person"},
+      {"word": "love", "emoji": "❤️", "codepoint": "U+2764", "reason": "Heart symbol for love"},
+      {"word": "pizza", "emoji": "🍕", "codepoint": "U+1F355", "reason": "Pizza emoji"}
+    ]
+  }
+}
+
+Return ONLY valid JSON.`
+
+      const response = await window.spark.llm(promptText, 'gpt-4o', true)
+      const parsed = JSON.parse(response)
+      
+      setTranslation(parsed.translation)
+    } catch (error) {
+      console.error('Error translating:', error)
+      toast.error('Failed to translate. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const examplePrompts = [
     "Celebrating a big win at work!",
     "Feeling cozy on a rainy day",
@@ -294,6 +375,14 @@ Return ONLY valid JSON.`
     "Feeling a bit overwhelmed with everything going on right now.",
     "This movie was absolutely incredible, best thing I've seen all year!",
     "Not sure how I feel about the changes, mixed emotions honestly."
+  ]
+
+  const translationExamples = [
+    "I love coffee in the morning",
+    "Going to the beach this weekend",
+    "Happy birthday to my best friend",
+    "Time to hit the gym and workout",
+    "Let's celebrate with pizza and cake"
   ]
 
   const getSentimentColor = (sentiment: string) => {
@@ -346,10 +435,14 @@ Return ONLY valid JSON.`
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="suggest" className="gap-2">
               <Sparkle size={18} weight="fill" />
               Suggest
+            </TabsTrigger>
+            <TabsTrigger value="translate" className="gap-2">
+              <Translate size={18} weight="fill" />
+              Translate
             </TabsTrigger>
             <TabsTrigger value="sentiment" className="gap-2">
               <Brain size={18} weight="fill" />
@@ -357,7 +450,7 @@ Return ONLY valid JSON.`
             </TabsTrigger>
             <TabsTrigger value="combinations" className="gap-2">
               <Palette size={18} weight="fill" />
-              Combinations
+              Combos
             </TabsTrigger>
           </TabsList>
 
@@ -542,6 +635,210 @@ Return ONLY valid JSON.`
                     >
                       <Sparkle size={20} weight="fill" />
                       Try Another Prompt
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </TabsContent>
+
+          <TabsContent value="translate" className="space-y-6">
+            <Card className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="translate-prompt" className="block text-sm font-medium mb-2">
+                    Enter a sentence to translate into emojis
+                  </label>
+                  <Textarea
+                    id="translate-prompt"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="E.g., 'I love pizza' → ❤️🍕"
+                    className="min-h-[120px] text-base resize-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        handleTranslate()
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    AI will convert each word into emojis
+                  </div>
+                  <Button
+                    onClick={handleTranslate}
+                    disabled={isLoading || !prompt.trim()}
+                    className="gap-2 bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                    size="lg"
+                  >
+                    <Translate weight="fill" size={20} />
+                    {isLoading ? 'Translating...' : 'Translate to Emojis'}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {!isLoading && !translation && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <h3 className="text-lg font-semibold text-muted-foreground">Try these examples:</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {translationExamples.map((example, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPrompt(example)}
+                      className="text-left"
+                    >
+                      <Card className="p-4 hover:bg-secondary/50 transition-colors cursor-pointer border-2 hover:border-primary/30">
+                        <p className="text-sm">{example}</p>
+                      </Card>
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {isLoading && (
+              <div className="flex flex-col items-center justify-center py-16 space-y-4">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                  <Translate className="text-primary" weight="fill" size={48} />
+                </motion.div>
+                <p className="text-lg text-muted-foreground">Translating to emojis...</p>
+              </div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {translation && !isLoading && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-6"
+                >
+                  <Card className="p-8 border-2 bg-gradient-to-br from-primary/5 to-accent/5">
+                    <div className="space-y-6">
+                      <div>
+                        <p className="text-sm text-muted-foreground mb-2">Original</p>
+                        <p className="text-xl font-medium">{translation.original}</p>
+                      </div>
+
+                      <div className="border-t pt-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm text-muted-foreground">Emoji Translation</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-2"
+                            onClick={() => {
+                              navigator.clipboard.writeText(translation.translated)
+                              toast.success('Translation copied!')
+                            }}
+                          >
+                            <Copy size={16} weight="bold" />
+                            Copy All
+                          </Button>
+                        </div>
+                        <div className="text-5xl leading-relaxed break-words">
+                          {translation.translated}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <div>
+                    <h3 className="text-xl font-bold mb-4">Word-by-Word Breakdown</h3>
+                    <div className="grid gap-3">
+                      {translation.breakdown.map((item, index) => {
+                        const emoji = EMOJIS.find(e => e.codepoint === item.codepoint.split(',')[0])
+                        return (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                          >
+                            <Card className="p-4 hover:shadow-lg transition-all border-2 hover:border-primary/30">
+                              <div className="flex items-center gap-4">
+                                <div className="text-4xl flex-shrink-0">
+                                  {item.emoji}
+                                </div>
+                                
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className="font-mono text-xs">
+                                      {item.word}
+                                    </Badge>
+                                    <span className="text-muted-foreground">→</span>
+                                  </div>
+                                  <p className="text-sm text-muted-foreground">
+                                    {item.reason}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(item.emoji)
+                                      toast.success('Emoji copied!')
+                                    }}
+                                  >
+                                    <Copy size={16} weight="bold" />
+                                  </Button>
+                                  {emoji && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => onToggleFavorite(emoji.codepoint)}
+                                      >
+                                        <Heart
+                                          size={16}
+                                          weight={favorites.includes(emoji.codepoint) ? 'fill' : 'regular'}
+                                          className={favorites.includes(emoji.codepoint) ? 'text-destructive' : ''}
+                                        />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => onSelectEmoji(emoji)}
+                                      >
+                                        Details
+                                      </Button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </Card>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => {
+                        setTranslation(null)
+                        setPrompt('')
+                      }}
+                      className="gap-2"
+                    >
+                      <Translate size={20} weight="fill" />
+                      Translate Another Sentence
                     </Button>
                   </div>
                 </motion.div>
