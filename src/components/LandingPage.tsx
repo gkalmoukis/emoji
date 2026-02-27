@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Heart, MagnifyingGlass, FolderOpen, Clock, Sparkle, Copy, Check } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import EmojiShowcaseCarousel from './EmojiShowcaseCarousel'
 
 interface LandingPageProps {
   onGetStarted: () => void
@@ -62,6 +63,14 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               Explore Emojis
             </Button>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <EmojiShowcaseCarousel />
         </motion.div>
 
         <motion.div
