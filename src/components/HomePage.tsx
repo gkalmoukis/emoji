@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { MagnifyingGlass, X, Copy, Heart, FolderOpen, Star } from '@phosphor-icons/react'
+import { MagnifyingGlass, X, Copy, Heart, FolderOpen, Star, Sparkle } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -16,6 +16,7 @@ interface HomePageProps {
   onToggleFavorite: (codepoint: string) => void
   onNavigateToCollections: () => void
   onNavigateToFavorites: () => void
+  onNavigateToAI: () => void
 }
 
 export default function HomePage({ 
@@ -25,6 +26,7 @@ export default function HomePage({
   onToggleFavorite,
   onNavigateToCollections,
   onNavigateToFavorites,
+  onNavigateToAI,
 }: HomePageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -148,6 +150,10 @@ export default function HomePage({
             </p>
           </div>
           <div className="flex gap-2">
+            <Button variant="default" className="gap-2 bg-primary hover:bg-primary/90" onClick={onNavigateToAI}>
+              <Sparkle size={18} weight="fill" />
+              AI Suggest
+            </Button>
             <Button variant="outline" onClick={onNavigateToFavorites}>
               <Heart className="mr-2" size={18} weight="fill" />
               Favorites

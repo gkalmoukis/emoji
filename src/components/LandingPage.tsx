@@ -8,9 +8,10 @@ import EmojiShowcaseCarousel from './EmojiShowcaseCarousel'
 
 interface LandingPageProps {
   onGetStarted: () => void
+  onNavigateToAI: () => void
 }
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, onNavigateToAI }: LandingPageProps) {
   const [copiedDemo, setCopiedDemo] = useState(false)
 
   const handleDemoCopy = () => {
@@ -130,9 +131,24 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card className="p-6 h-full bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:border-primary/40 transition-colors">
+              <Card className="p-6 h-full bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer" onClick={onNavigateToAI}>
                 <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-4">
-                  <MagnifyingGlass className="text-primary" weight="bold" size={24} />
+                  <Sparkle className="text-primary" weight="fill" size={24} />
+                </div>
+                <h3 className="text-xl font-bold mb-2">AI Suggestions</h3>
+                <p className="text-muted-foreground">
+                  Describe any mood or situation and get perfect emoji suggestions powered by AI
+                </p>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card className="p-6 h-full bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 hover:border-accent/40 transition-colors">
+                <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
+                  <MagnifyingGlass className="text-accent" weight="bold" size={24} />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Smart Search</h3>
                 <p className="text-muted-foreground">
@@ -145,9 +161,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card className="p-6 h-full bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 hover:border-accent/40 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center mb-4">
-                  <FolderOpen className="text-accent" weight="bold" size={24} />
+              <Card className="p-6 h-full bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20 hover:border-destructive/40 transition-colors">
+                <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center mb-4">
+                  <FolderOpen className="text-destructive" weight="bold" size={24} />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Collections</h3>
                 <p className="text-muted-foreground">
@@ -160,28 +176,13 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card className="p-6 h-full bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20 hover:border-destructive/40 transition-colors">
-                <div className="w-12 h-12 rounded-xl bg-destructive/20 flex items-center justify-center mb-4">
-                  <Heart className="text-destructive" weight="fill" size={24} />
-                </div>
-                <h3 className="text-xl font-bold mb-2">Favorites</h3>
-                <p className="text-muted-foreground">
-                  Save your go-to emojis for quick access. All your favorites in one place
-                </p>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
               <Card className="p-6 h-full bg-gradient-to-br from-muted to-muted/50 border-border hover:border-foreground/20 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-foreground/10 flex items-center justify-center mb-4">
-                  <Clock className="text-foreground" weight="bold" size={24} />
+                  <Heart className="text-foreground" weight="fill" size={24} />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Recent History</h3>
+                <h3 className="text-xl font-bold mb-2">Favorites & History</h3>
                 <p className="text-muted-foreground">
-                  Automatically track your last 20 viewed emojis for easy access
+                  Save your go-to emojis and track your last 20 viewed emojis automatically
                 </p>
               </Card>
             </motion.div>

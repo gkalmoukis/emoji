@@ -7,6 +7,7 @@ import ShowPage from './components/ShowPage'
 import CollectionsIndexPage from './components/CollectionsIndexPage'
 import CollectionShowPage from './components/CollectionShowPage'
 import FavoritesPage from './components/FavoritesPage'
+import AISuggestPage from './components/AISuggestPage'
 import type { Emoji } from './lib/emoji-data'
 import type { Collection } from './lib/collections'
 import { toast } from 'sonner'
@@ -18,6 +19,7 @@ type View =
   | { type: 'collections' }
   | { type: 'collection'; collection: Collection }
   | { type: 'favorites' }
+  | { type: 'ai-suggest' }
 
 function App() {
   const [view, setView] = useState<View>({ type: 'landing' })
@@ -95,7 +97,10 @@ function App() {
     switch (view.type) {
       case 'landing':
         return (
-          <LandingPage onGetStarted={() => setView({ type: 'home' })} />
+          <LandingPage 
+            onGetStarted={() => setView({ type: 'home' })}
+            onNavigateToAI={() => setView({ type: 'ai-suggest' })}
+          />
         )
 
       case 'home':
@@ -107,6 +112,7 @@ function App() {
             onToggleFavorite={handleToggleFavorite}
             onNavigateToCollections={() => setView({ type: 'collections' })}
             onNavigateToFavorites={() => setView({ type: 'favorites' })}
+            onNavigateToAI={() => setView({ type: 'ai-suggest' })}
           />
         )
 
@@ -155,6 +161,16 @@ function App() {
             onSelectEmoji={handleSelectEmoji}
             onToggleFavorite={handleToggleFavorite}
             onBack={() => setView({ type: 'home' })}
+          />
+        )
+
+      case 'ai-suggest':
+        return (
+          <AISuggestPage
+            onBack={() => setView({ type: 'home' })}
+            onSelectEmoji={handleSelectEmoji}
+            favorites={favorites || []}
+            onToggleFavorite={handleToggleFavorite}
           />
         )
     }
