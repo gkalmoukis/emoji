@@ -62,11 +62,25 @@ This is a focused tool with two main views (browse and detail), search/filter fu
 - **Success criteria**: Collections persist across sessions, can contain multiple emojis, display as separate sections on index page with custom icon/color, user can add/remove emojis from collections easily, collections can be deleted via management dialog
 
 ### Recent History
-- **Functionality**: Automatically tracks the last 20 emojis viewed by the user
+- **Functionality**: Automatically tracks the last 20 emojis viewed by the user, displayed on home page
 - **Purpose**: Allows users to quickly return to previously viewed emojis
 - **Trigger**: User clicks any emoji to view detail page
-- **Progression**: View emoji detail → Emoji added to recent history → Recent section updates on index page → Older entries automatically removed when limit reached
+- **Progression**: View emoji detail → Emoji added to recent history → Recent section updates on home page → Older entries automatically removed when limit reached
 - **Success criteria**: History persists across sessions, displays in reverse chronological order (newest first), automatically manages 20-item limit
+
+### Navigation Structure
+- **Functionality**: Multiple index pages and views accessible through navigation buttons and back buttons
+- **Purpose**: Organized browsing experience with clear paths between home, collections, favorites, and individual views
+- **Trigger**: User clicks navigation buttons or back buttons
+- **Progression**: Home (with search/categories/recents) ⇄ Collections index ⇄ Collection show page ⇄ Emoji detail; Home ⇄ Favorites index ⇄ Emoji detail
+- **Success criteria**: Users can navigate between all views without confusion, back buttons work consistently, state is maintained when navigating
+
+### Improved Hover Interactions
+- **Functionality**: Enhanced hover overlay on emoji cards with prominent copy and favorite buttons on gradient background
+- **Purpose**: Quick access to common actions without navigating to detail page
+- **Trigger**: User hovers over any emoji card
+- **Progression**: Hover over emoji → Gradient overlay appears with action buttons → Click copy (emoji copies + toast) OR click heart (toggles favorite + updates UI) → Overlay remains until mouse leaves
+- **Success criteria**: Overlay is visually striking with good contrast, buttons are easy to hit, actions work instantly, favorite indicator shows correct state when not hovering
 
 ## Edge Case Handling
 - **Empty Search Results**: Show friendly message with emoji suggesting to try different keywords or clear filters

@@ -1,20 +1,30 @@
 import { useState } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
-import IndexPage from './components/IndexPage'
+import HomePage from './components/HomePage'
 import ShowPage from './components/ShowPage'
+import CollectionsIndexPage from './components/CollectionsIndexPage'
+import CollectionShowPage from './components/CollectionShowPage'
+import FavoritesPage from './components/FavoritesPage'
 import type { Emoji } from './lib/emoji-data'
 import type { Collection } from './lib/collections'
 import { toast } from 'sonner'
 
+type View = 
+  | { type: 'home' }
+  | { type: 'emoji'; emoji: Emoji }
+  | { type: 'collections' }
+  | { type: 'collection'; collection: Collection }
+  | { type: 'favorites' }
+
 function App() {
-  const [selectedEmoji, setSelectedEmoji] = useState<Emoji | null>(null)
+  const [view, setView] = useState<View>({ type: 'home' })
   const [favorites, setFavorites] = useKV<string[]>('emoji-favorites', [])
   const [recents, setRecents] = useKV<string[]>('emoji-recents', [])
   const [collections, setCollections] = useKV<Collection[]>('emoji-collections', [])
 
   const handleSelectEmoji = (emoji: Emoji) => {
-    setSelectedEmoji(emoji)
+    setView({ type: 'emoji', emoji })
     
     setRecents((currentRecents) => {
       const current = currentRecents || []
@@ -79,33 +89,74 @@ function App() {
     toast.success('Removed from collection')
   }
 
-  return (
-    <>
-      <div className="min-h-screen bg-background">
-        {selectedEmoji ? (
-          <ShowPage 
-            emoji={selectedEmoji} 
-            onBack={() => setSelectedEmoji(null)}
-            isFavorite={(favorites || []).includes(selectedEmoji.codepoint)}
-            onToggleFavorite={() => handleToggleFavorite(selectedEmoji.codepoint)}
-            collections={collections || []}
-            onAddToCollection={handleAddToCollection}
-            onRemoveFromCollection={handleRemoveFromCollection}
-            onCreateCollection={handleCreateCollection}
-          />
-        ) : (
-          <IndexPage 
+  const renderView = () => {
+    switch (view.type) {
+      case 'home':
+        return (
+          <HomePage
             onSelectEmoji={handleSelectEmoji}
             favorites={favorites || []}
             recents={recents || []}
             onToggleFavorite={handleToggleFavorite}
+            onNavigateToCollections={() => setView({ type: 'collections' })}
+            onNavigateToFavorites={() => setView({ type: 'favorites' })}
+          />
+        )
+
+      case 'emoji':
+        return (
+          <ShowPage 
+            emoji={view.emoji} 
+            onBack={() => setView({ type: 'home' })}
+            isFavorite={(favorites || []).includes(view.emoji.codepoint)}
+            onToggleFavorite={() => handleToggleFavorite(view.emoji.codepoint)}
+            collections={collections || []}
+            onAddToCollection={handleAddToCollection}
+            onRemoveFromCollection={handleRemoveFromCollection}
+            onCreateCollection={handleCreateCollection}
+          />
+        )
+
+      case 'collections':
+        return (
+          <CollectionsIndexPage
             collections={collections || []}
             onCreateCollection={handleCreateCollection}
             onDeleteCollection={handleDeleteCollection}
-            onAddToCollection={handleAddToCollection}
-            onRemoveFromCollection={handleRemoveFromCollection}
+            onSelectCollection={(collection) => setView({ type: 'collection', collection })}
+            onBack={() => setView({ type: 'home' })}
           />
-        )}
+        )
+
+      case 'collection':
+        return (
+          <CollectionShowPage
+            collection={view.collection}
+            onSelectEmoji={handleSelectEmoji}
+            onRemoveFromCollection={handleRemoveFromCollection}
+            onDeleteCollection={handleDeleteCollection}
+            onBack={() => setView({ type: 'collections' })}
+            favorites={favorites || []}
+            onToggleFavorite={handleToggleFavorite}
+          />
+        )
+
+      case 'favorites':
+        return (
+          <FavoritesPage
+            favorites={favorites || []}
+            onSelectEmoji={handleSelectEmoji}
+            onToggleFavorite={handleToggleFavorite}
+            onBack={() => setView({ type: 'home' })}
+          />
+        )
+    }
+  }
+
+  return (
+    <>
+      <div className="min-h-screen bg-background">
+        {renderView()}
       </div>
       <Toaster />
     </>
