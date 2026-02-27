@@ -8,9 +8,16 @@ A lightweight, user-friendly emoji discovery and selection tool that makes findi
 3. **Focused** - Each page has a single clear purpose: browse/search or examine an emoji in detail
 
 **Complexity Level**: Light Application (multiple features with basic state)
-This is a focused tool with two main views (browse and detail), search/filter functionality, and basic actions like copy and share. It maintains minimal state and doesn't require complex data relationships or authentication flows.
+This is a focused tool with multiple views (landing, browse, detail, collections, favorites), search/filter functionality, and basic actions like copy and share. It maintains minimal state and doesn't require complex data relationships or authentication flows.
 
 ## Essential Features
+
+### Landing Page
+- **Functionality**: Marketing-focused first page showcasing Emojipedia's features and value proposition with call-to-action buttons
+- **Purpose**: Introduce new users to the tool, highlight key features, and provide an entry point to the application
+- **Trigger**: User visits the application for the first time or navigates to the landing view
+- **Progression**: View landing page → Read feature descriptions → Click "Get Started" or "Explore Emojis" → Navigate to home page with full emoji browser
+- **Success criteria**: Clear value proposition, engaging design with animations, smooth transition to app, all features are highlighted
 
 ### Search Functionality
 - **Functionality**: Real-time text search that filters emojis by name, keywords, and description

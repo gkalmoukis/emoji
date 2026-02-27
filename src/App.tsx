@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { useKV } from '@github/spark/hooks'
+import LandingPage from './components/LandingPage'
 import HomePage from './components/HomePage'
 import ShowPage from './components/ShowPage'
 import CollectionsIndexPage from './components/CollectionsIndexPage'
@@ -11,6 +12,7 @@ import type { Collection } from './lib/collections'
 import { toast } from 'sonner'
 
 type View = 
+  | { type: 'landing' }
   | { type: 'home' }
   | { type: 'emoji'; emoji: Emoji }
   | { type: 'collections' }
@@ -18,7 +20,7 @@ type View =
   | { type: 'favorites' }
 
 function App() {
-  const [view, setView] = useState<View>({ type: 'home' })
+  const [view, setView] = useState<View>({ type: 'landing' })
   const [favorites, setFavorites] = useKV<string[]>('emoji-favorites', [])
   const [recents, setRecents] = useKV<string[]>('emoji-recents', [])
   const [collections, setCollections] = useKV<Collection[]>('emoji-collections', [])
@@ -91,6 +93,11 @@ function App() {
 
   const renderView = () => {
     switch (view.type) {
+      case 'landing':
+        return (
+          <LandingPage onGetStarted={() => setView({ type: 'home' })} />
+        )
+
       case 'home':
         return (
           <HomePage
