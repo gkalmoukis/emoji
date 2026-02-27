@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { MagnifyingGlass, X, Copy, Heart } from '@phosphor-icons/react'
+import { MagnifyingGlass, X, Copy, Heart, FolderOpen } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -7,15 +7,30 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { EMOJIS, CATEGORIES, type Emoji } from '@/lib/emoji-data'
+import type { Collection } from '@/lib/collections'
+import CollectionDialog, { ManageCollectionsDialog } from './CollectionDialog'
 
 interface IndexPageProps {
   onSelectEmoji: (emoji: Emoji) => void
   favorites: string[]
   recents: string[]
   onToggleFavorite: (codepoint: string) => void
+  collections: Collection[]
+  onCreateCollection: (name: string, emoji: string, color: string) => void
+  onDeleteCollection: (id: string) => void
+  onAddToCollection: (collectionId: string, emojiCodepoint: string) => void
+  onRemoveFromCollection: (collectionId: string, emojiCodepoint: string) => void
 }
 
-export default function IndexPage({ onSelectEmoji, favorites, recents, onToggleFavorite }: IndexPageProps) {
+export default function IndexPage({ 
+  onSelectEmoji, 
+  favorites, 
+  recents, 
+  onToggleFavorite,
+  collections,
+  onCreateCollection,
+  onDeleteCollection,
+}: IndexPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
 
@@ -111,12 +126,23 @@ export default function IndexPage({ onSelectEmoji, favorites, recents, onToggleF
   return (
     <div className="container mx-auto px-6 py-8 max-w-7xl">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-2 tracking-tight">
-          Emojipedia
-        </h1>
-        <p className="text-muted-foreground">
-          Find the perfect emoji for every moment
-        </p>
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground tracking-tight">
+              Emojipedia
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Find the perfect emoji for every moment
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <CollectionDialog onCreateCollection={onCreateCollection} />
+            <ManageCollectionsDialog 
+              collections={collections}
+              onDeleteCollection={onDeleteCollection}
+            />
+          </div>
+        </div>
       </header>
 
       <div className="mb-6">
@@ -173,6 +199,30 @@ export default function IndexPage({ onSelectEmoji, favorites, recents, onToggleF
           <Separator className="my-8" />
         </>
       )}
+
+      {collections.length > 0 && !searchQuery && selectedCategories.length === 0 && collections.map((collection) => {
+        const collectionEmojis = EMOJIS.filter(e => collection.emojiCodepoints.includes(e.codepoint))
+        if (collectionEmojis.length === 0) return null
+        
+        return (
+          <div key={collection.id} className="mb-6">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <span 
+                className="h-8 w-8 rounded-md flex items-center justify-center text-lg"
+                style={{ backgroundColor: collection.color }}
+              >
+                {collection.emoji}
+              </span>
+              {collection.name}
+              <span className="text-sm text-muted-foreground font-normal">
+                ({collectionEmojis.length})
+              </span>
+            </h2>
+            {renderEmojiGrid(collectionEmojis)}
+            <Separator className="my-8" />
+          </div>
+        )
+      })}
 
       {recentEmojis.length > 0 && !searchQuery && selectedCategories.length === 0 && (
         <>

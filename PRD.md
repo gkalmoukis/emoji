@@ -54,6 +54,13 @@ This is a focused tool with two main views (browse and detail), search/filter fu
 - **Progression**: Click heart → Emoji added to favorites (persistent) → Heart fills with animation → Toast confirms → Favorites section updates
 - **Success criteria**: Favorites persist across sessions, heart icon shows correct state, users can unfavorite easily, favorites appear in dedicated section on index page
 
+### Collections and Custom Categories
+- **Functionality**: Users can create custom-named collections with icon and color, then organize favorite emojis into these collections
+- **Purpose**: Provides better organization than a single favorites list, allowing users to group emojis by theme (e.g., "Work", "Fun", "Reactions", "Projects")
+- **Trigger**: User clicks "New Collection" button in header → Selects icon, color, and name → Collection created → User clicks "Add to Collection" from emoji detail page or hover action
+- **Progression**: Create collection → Name and customize → Click "Add to Collection" on any emoji → Select target collection(s) → Emoji added → Collection section displays on index page → Manage collections to delete unwanted ones
+- **Success criteria**: Collections persist across sessions, can contain multiple emojis, display as separate sections on index page with custom icon/color, user can add/remove emojis from collections easily, collections can be deleted via management dialog
+
 ### Recent History
 - **Functionality**: Automatically tracks the last 20 emojis viewed by the user
 - **Purpose**: Allows users to quickly return to previously viewed emojis

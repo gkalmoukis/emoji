@@ -1,19 +1,33 @@
 import { useState } from 'react'
-import { ArrowLeft, Copy, Code, Share, Heart } from '@phosphor-icons/react'
+import { ArrowLeft, Copy, Code, Share, Heart, FolderOpen } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { SKIN_TONES, type Emoji } from '@/lib/emoji-data'
+import type { Collection } from '@/lib/collections'
+import AddToCollectionDialog from './AddToCollectionDialog'
 
 interface ShowPageProps {
   emoji: Emoji
   onBack: () => void
   isFavorite: boolean
   onToggleFavorite: () => void
+  collections: Collection[]
+  onAddToCollection: (collectionId: string, emojiCodepoint: string) => void
+  onRemoveFromCollection: (collectionId: string, emojiCodepoint: string) => void
+  onCreateCollection: (name: string, emoji: string, color: string) => void
 }
 
-export default function ShowPage({ emoji, onBack, isFavorite, onToggleFavorite }: ShowPageProps) {
+export default function ShowPage({ 
+  emoji, 
+  onBack, 
+  isFavorite, 
+  onToggleFavorite,
+  collections,
+  onAddToCollection,
+  onRemoveFromCollection,
+}: ShowPageProps) {
   const [selectedTone, setSelectedTone] = useState(0)
 
   const displayEmoji = emoji.hasSkinTone
@@ -153,6 +167,23 @@ export default function ShowPage({ emoji, onBack, isFavorite, onToggleFavorite }
                 <Share className="mr-2" />
                 Share
               </Button>
+            </div>
+
+            <Separator className="my-6" />
+
+            <div className="w-full">
+              <AddToCollectionDialog
+                emojiCodepoint={emoji.codepoint}
+                collections={collections}
+                onAddToCollection={onAddToCollection}
+                onRemoveFromCollection={onRemoveFromCollection}
+                trigger={
+                  <Button variant="outline" size="lg" className="w-full">
+                    <FolderOpen className="mr-2" />
+                    Add to Collection
+                  </Button>
+                }
+              />
             </div>
           </div>
         </Card>
